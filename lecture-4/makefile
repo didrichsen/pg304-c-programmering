@@ -10,14 +10,14 @@ OBJDIR = obj
 _DEPS =
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = exercise-6-bubble-sort-string.o
+_OBJS = exercise-4-buuble-sort.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 		$(CC) -c -o $@ $< $(CFLAGS)
 
 
-exercise-6-bubble-sort-string: $(OBJS)
+exercise-4-buuble-sort: $(OBJS)
 		gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
