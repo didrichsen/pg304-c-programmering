@@ -30,19 +30,21 @@ int addBot();
 int main (int iArgC, char *apszArgV[])
 {
 
-  srand (time(NULL)); // A simple seed to random numbers
-  initscr();          // Init ncurses library.
+    srand (time(NULL)); // A simple seed to random numbers
+    //initscr();          // Init ncurses library.
 
-  printw("Welcome to the crappy bot game. Your life is 100\n\n");
+    printw("Welcome to the crappy bot game. Your life is 100\n\n");
 
-  printw("100\n111\n101"); //Example bot - this is not how you should be printing though
+    printw("100\n111\n101"); //Example bot - this is not how you should be printing though
 
-  timeout (5000);  // This is how you do a timed-input. In milliseconds
-  int c = getch(); // And just normal input - it gives -1 if the input is timedout
+    timeout (5000);  // This is how you do a timed-input. In milliseconds
+    int c = getch(); // And just normal input - it gives -1 if the input is timedout
 
-  endwin();        // Close ncurses library.
+    //endwin();        // Close ncurses library.
 
-  printf("Game Summary and timeout character is %d\n", c);
+    printf("Game Summary and timeout character is %d\n", c);
 
-  return 0;
+    return 0;
 }
+
+

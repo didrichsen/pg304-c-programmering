@@ -10,7 +10,7 @@ ifneq ($(strip $(windir)),)
    RM = del /Y *.obj *.ilk *.pdb *.sln
 else
 # Linux
-   TARGETS = ex0 ex0a ex0b ex1 ex2 ex3 botgame botgame2
+   TARGETS = ex0 ex0a ex0b ex1 ex2 ex3 botgame botgame2 game
    CC = gcc
    # CFLAGS = -O0 -std=c11 -o $(TARGET)
    CFLAGS = -O2 -std=c11 -o $(TARGET)
