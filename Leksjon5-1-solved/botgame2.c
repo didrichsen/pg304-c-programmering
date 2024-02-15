@@ -35,6 +35,8 @@ bool PlayRoom (BOTLIST *pbRoom, int *piLife, int *piTimeOut, int iRooms);
 
 int main (int iArgC, char *apszArgV[])
 {
+
+
   int iLife = 100;        // Initial life 
   int iTimeOut = 10;      // Initial timeout
   int iRoomsCleared = 0;  // Number of rooms cleared.
@@ -52,7 +54,8 @@ int main (int iArgC, char *apszArgV[])
       ++iRoomsCleared;
     }  
     DestroyRoom (psRoom);
-  } 
+  }
+
 
   endwin();        // Close ncurses library.
   return 0;
