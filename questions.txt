@@ -1,0 +1,1 @@
+1. Hør med veileder om det bengt prater om med fgets og buffer overflow. Skal man gjøre en size sjekk for å sikre at vi ikke er over størrelsen som vi oppgir i buffer?
