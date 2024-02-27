@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "md5.h"
+#include <string.h>
 
 /*
 Output should be:
@@ -12,7 +13,7 @@ void print_hash(char hash[])
 {
    int idx;
    for (idx=0; idx < 16; idx++)
-      printf("%02x",hash[idx]);
+      printf("%02x", hash[idx]);
    printf("\n");
 }
 

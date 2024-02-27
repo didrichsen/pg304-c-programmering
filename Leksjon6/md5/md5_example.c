@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "md5.h"
+#include <string.h>
 
 /*
 Output should be:
