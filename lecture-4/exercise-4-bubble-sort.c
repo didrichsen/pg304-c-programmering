@@ -5,7 +5,7 @@
 #define TRUE 1;
 
 void printArray(unsigned int array[], int size);
-void swap(int a, int b);
+void swap(unsigned int *a,unsigned int *b);
 
 void bubbleSort(unsigned int array[], int size){
 
@@ -17,14 +17,9 @@ void bubbleSort(unsigned int array[], int size){
         swapped = FALSE;
         for(j = 0; j < size - i - 1; j++){
             if(array[j] > array[j + 1]){
-                /*
-                temp = array[j];
-                array[j] = array[j+1];
-                array[j+1] = temp;
-                swapped = TRUE;
-                 */
 
-                swap(*array[j], &array[j+1]);
+                swap(&array[j], &array[j+1]);
+                swapped = TRUE;
             }
         }
         if(!swapped){
@@ -38,12 +33,12 @@ void bubbleSort(unsigned int array[], int size){
 
 }
 
-void swap (int &a, int &b){
+void swap (unsigned int *a,unsigned int *b){
 
-    int temp;
+    unsigned int temp;
 
-    int *pIntA = &a;
-    int *pIntB = &b;
+    unsigned int *pIntA = a;
+    unsigned int *pIntB = b;
 
     temp = *pIntB;
     *pIntB = *pIntA;

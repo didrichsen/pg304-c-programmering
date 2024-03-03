@@ -1,0 +1,2 @@
+loggerTest.c, 10: debug Test
+loggerTest.c, 11: error 3rror
