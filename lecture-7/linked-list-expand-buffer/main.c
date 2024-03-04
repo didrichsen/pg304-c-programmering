@@ -21,7 +21,7 @@ How would you write code that uses cBuf[] to "hold" an array of 100 longs?
 
 
 int main(int argc, char* argv[]){
-/*
+
     Node *myNode = NULL;
     long array[100];
     char longAsChar[20];
@@ -72,17 +72,9 @@ int main(int argc, char* argv[]){
         ptr += 1;
     }
 
-
     printf("Content of cBuf: %s\n",myNode->cBuf);
 
-
     free(myNode);
-    */
-
-int numberOfDigits = countDigits(99999);
-
-    printf("Number of digits: %d", numberOfDigits);
-
 
     return 0;
 }

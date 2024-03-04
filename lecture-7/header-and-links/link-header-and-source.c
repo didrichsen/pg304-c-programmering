@@ -8,8 +8,6 @@ int main (void){
 
     printf("%d\n",size);
 
-
     bubbleSort(array,size);
-
 
 }

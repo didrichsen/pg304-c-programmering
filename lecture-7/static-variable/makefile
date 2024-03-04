@@ -1,15 +1,15 @@
 INCLDIR = ./include
-TARGET = exercise-3-extend-buffer-for-long
+TARGET = count-number-of-calls
 CC = gcc
 CFLAGS = -O0
 CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-_DEPS = exercise-3-extend-buffer.h
+_DEPS =
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = exercise-3-extend-buffer.o main.o
+_OBJS = count-number-of-calls.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
