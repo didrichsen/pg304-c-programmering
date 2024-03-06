@@ -3,6 +3,7 @@
 //
 
 #include "include/myalloc.h"
+#include "include/sdlogger.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -13,6 +14,8 @@ void *myAlloc(const char* pFlags, ...){
     char pType[10];
     char pFlag;
     void *p = NULL;
+
+    sddebug("Test");
 
     va_list vaArgumentPointer;
 
