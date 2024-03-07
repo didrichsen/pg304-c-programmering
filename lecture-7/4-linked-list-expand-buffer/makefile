@@ -1,18 +1,18 @@
 INCLDIR = ./include
-TARGET = exercise-3-extend-buffer
+TARGET = exercise-linked-list
 CC = gcc
 CFLAGS = -O0
 CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-LIBDIR = ../../my-static-library
+LIBDIR = ../../library
 LDFLAGS = -L$(LIBDIR) -lsdlogger
 
-_DEPS = sdlogger.h myalloc.h
+_DEPS = linked-list.h sdlogger.h
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = main.o myalloc.o
+_OBJS = linked-list.o main.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)

@@ -15,8 +15,6 @@ void *myAlloc(const char* pFlags, ...){
     char pFlag;
     void *p = NULL;
 
-    sddebug("Test");
-
     va_list vaArgumentPointer;
 
     sscanf(pFlags,"%s %c", pType, &pFlag);
