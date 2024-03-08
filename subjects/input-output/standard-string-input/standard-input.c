@@ -14,7 +14,7 @@
 int main(void ){
 
     char buffer[SZEOFBUFFER];
-    int index;
+    unsigned long index;
 
     printf("Enter a string: ");
 
@@ -33,7 +33,7 @@ int main(void ){
     }
 
     printf("Your string: %s\n",buffer);
-    printf("Length of |%s| is |%llu|\n", buffer, strlen(buffer));
+    printf("Length of |%s| is |%lu|\n", buffer, strlen(buffer));
 
     return 0;
 

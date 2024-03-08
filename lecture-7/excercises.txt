@@ -29,8 +29,6 @@ typedef struct _LIST {
 The buffer cBuf is a placeholder for any kind and size of data, and can be used
 to hold a string as:
 
-//Tolker det under som at man kan se på en struct som en samlet "minne enhet". Sjekk med veileder eller Bengt om den tanken.
-
    char szStr[] = "This is a long string.";
    LIST *pThis = malloc (sizeof(LIST)+strlen(szStr));
    strcpy (pThis->cBuf, szStr);

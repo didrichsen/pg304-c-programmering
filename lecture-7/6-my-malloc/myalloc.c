@@ -3,7 +3,7 @@
 //
 
 #include "include/myalloc.h"
-#include "include/sdlogger.h"
+#include "../../lecture-8/1-header-parser-tga/include/sdlogger.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

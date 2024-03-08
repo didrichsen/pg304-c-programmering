@@ -1,25 +1,22 @@
 INCLDIR = ./include
-TARGET = exercise-linked-list
+TARGET = exercise-3-extend-buffer
 CC = gcc
 CFLAGS = -O0
 CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-LIBDIR = ../../library
-LDFLAGS = -L$(LIBDIR) -lsdlogger
-
-_DEPS = linked-list.h sdlogger.h
+_DEPS = exercise-3-extend-buffer.h sdlogger.h
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = linked-list.o main.o
+_OBJS = main.o exercise-3-extend-buffer.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
 clean:

@@ -13,7 +13,6 @@ How would you write code that uses cBuf[] to "hold" an array of 100 longs?
  */
 
 #include "include/exercise-3-extend-buffer.h"
-//#2-include "2-include/sdlogger.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +23,7 @@ int main(int argc, char* argv[]){
 
     Node *myNode = NULL;
     long array[100];
-    char longAsChar[20];
+    char longAsChar[1];
     int size = 0;
     int start = 30000;
     int end = RAND_MAX;
@@ -42,7 +41,7 @@ int main(int argc, char* argv[]){
 
     for(int i = 0; i < arraySize; i++){
         //longAsChar is being overwritten each iteration.
-        size += snprintf(longAsChar,sizeof longAsChar,"%lu",array[i]);
+        size += snprintf(longAsChar,sizeof (longAsChar),"%lu",array[i]);
         //I want to allocate 1 char to have a space between each long.
         size += 1;
     }
