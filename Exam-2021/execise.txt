@@ -1,0 +1,11 @@
+In practical programming, it is often efficient to lay out time-consuming operations in working threads,
+examples of which are file operations, network operations and communication with external devices.
+In this task, you will simulate such operations with a smaller data set.
+
+You are going to create an application that consists of 2 threads,
+the main thread (which started main) and a working thread that will write data.
+When the main thread starts, it should first start the working thread with mechanisms for
+thread communication and synchronization. The main thread and work thread should have a memory
+area with room for 10 characters. (It can be a struct that also contains other control data such as
+the number of characters in the buffer and other things the student finds useful— but no more than 10 characters as a text buffer.
+It is permissible for such a struct to contain char a[11] if the eleventh character is used only for a 0-termination.)
