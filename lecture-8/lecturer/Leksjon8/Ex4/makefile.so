@@ -1,0 +1,28 @@
+#
+# Generic makefile for compiling and linking a shared library
+# and an executable using the shared library.
+#
+SOPATH = /media/sf_Shared/Leksjon8/Ex4
+TARGET = test
+OBJS = $(TARGET).o # List object files for the excutable here
+
+LIB = list
+LIBOBJS = $(LIB).o # List object files for the library here
+
+DEPS = list.h makefile.so
+# CFLAGS = -O2
+CFLAGS = -O0 -g -fPIC
+
+%.o: %.c $(DEPS)
+	gcc -c -o $@ $< $(CFLAGS)
+
+$(TARGET): $(OBJS) lib$(LIB).so
+	gcc -o $@ $(OBJS) $(CFLAGS) -L$(SOPATH) -l$(LIB) -Wl,-rpath=$(SOPATH)
+
+lib$(LIB).so: $(LIBOBJS)
+	gcc -shared $(CFLAGS) -o $@ $^
+
+.phony: clean
+clean:
+	rm -f *.a *.o $(TARGET) lib$(LIB).so
+

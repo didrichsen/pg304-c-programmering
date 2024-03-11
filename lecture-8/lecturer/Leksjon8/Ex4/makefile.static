@@ -1,0 +1,27 @@
+#
+# Generic makefile for compiling and linking a static library
+# and an executable using the static library
+#
+TARGET = test
+OBJS = $(TARGET).o # List object files for the excutable here
+
+LIB = list
+LIBOBJS = $(LIB).o # List object files for the library here
+
+DEPS = list.h makefile.a
+# CFLAGS = -O2
+CFLAGS = -O0 -g
+
+%.o: %.c $(DEPS)
+	gcc -c -o $@ $< $(CFLAGS)
+
+$(TARGET): $(OBJS) $(LIB).a
+	gcc -o $@ $^ $(CFLAGS)
+
+$(LIB).a: $(LIBOBJS)
+	ar rcs $@ $^
+
+.phony: clean
+clean:
+	rm -f *.a *.o $(TARGET) $(LIB).a
+

@@ -1,15 +1,12 @@
 INCLDIR = ./include
-TARGET = execise-1-parse-header
+TARGET = exercise-1-parse-header
 CC = gcc
 CFLAGS = -O0
 CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-LIBDIR = ../../my-static-library
-LDFLAGS = -L$(LIBDIR) -lsdlogger
-
-_DEPS = sdlogger.h
+_DEPS =
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
 _OBJS = main.o
