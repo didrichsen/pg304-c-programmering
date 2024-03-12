@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <endian.h>
 
 #pragma pack(1)
 typedef struct _PCAPHEADER{
@@ -62,6 +63,34 @@ typedef struct _UDPHEADER {
 } UDPHEADER;
 #pragma pack()
 
+#pragma pack(1)
+typedef struct _TCPHEADER {
+    uint16_t source_port;                       //The sending port
+    uint16_t destination_port;                  //The receiving port
+    uint32_t sequence_number;                   //
+    uint32_t acknowledgment_number;
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    unsigned int reserved:4;
+    unsigned int data_offset:4;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+    unsigned int data_offset:4;
+    unsigned int reserved:4;
+#endif
+    unsigned int CWR: 1;
+    unsigned int ECE: 1;
+    unsigned int URG: 1;
+    unsigned int ACK: 1;
+    unsigned int PSH: 1;
+    unsigned int RST: 1;
+    unsigned int SYN: 1;
+    unsigned int FIN: 1;
+    uint16_t window_size;
+    uint16_t checksum;
+    uint16_t urgent_pointer;
+
+}TCPHEADER;
+#pragma pack()
+
 int main(void) {
 
     FILE *fHandler = NULL;
@@ -95,10 +124,12 @@ int main(void) {
             }
 
             // Print packet header information
+
             printf("\n|PACKET HEADER|\n");
             printf("Timestamp Seconds: %u\n", packetheader.timestamp_second);
             printf("Timestamp Microseconds: %u\n", packetheader.timestamp_microseconds);
             printf("Captured Length: %u\n", packetheader.captured_length);
+
             uint8_t *packet_data = (uint8_t *) malloc(packetheader.captured_length);
             if (packet_data == NULL) {
                 perror("Failed to allocate memory for packet data");
@@ -124,9 +155,12 @@ int main(void) {
                    eth_header->src_mac[3], eth_header->src_mac[4], eth_header->src_mac[5]);
             printf("EtherType: %04X\n", ntohs(eth_header->ether_type));
 
+
             if(ntohs (eth_header->ether_type) == 0x86DD){
-                printf("\n|IPV6 HEADER|\n");
+
                 IPV6HEADER *ipv6Header = (IPV6HEADER*) (packet_data + sizeof (ETHERNETHEADER));
+
+                printf("\n|IPV6 HEADER|\n");
                 printf("\nSource Address: %02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X\n",
                        ipv6Header->src_addr[0], ipv6Header->src_addr[1], ipv6Header->src_addr[2], ipv6Header->src_addr[3],
                        ipv6Header->src_addr[4], ipv6Header->src_addr[5], ipv6Header->src_addr[6], ipv6Header->src_addr[7],
@@ -140,7 +174,9 @@ int main(void) {
                        ipv6Header->dest_addr[12], ipv6Header->dest_addr[13], ipv6Header->dest_addr[14], ipv6Header->dest_addr[15]);
                 printf("Next Header: %02X\n",ipv6Header->next_header);
 
+
                 if(ipv6Header->next_header == 0x11){
+
                     printf("\n|UDP Header|\n");
                     UDPHEADER *udpheader = (UDPHEADER*) (packet_data + sizeof (ETHERNETHEADER) + sizeof (IPV6HEADER));
                     printf("\nSource Port Number: %u\n", ntohs(udpheader->source_port_number));
@@ -160,6 +196,32 @@ int main(void) {
                     }
                     printf("\n |Payload Ended| \n");
 
+                }
+
+                if(ipv6Header->next_header == 0x06){
+                    TCPHEADER *tcpheader = (TCPHEADER*) (packet_data + sizeof (ETHERNETHEADER) + sizeof (IPV6HEADER));
+
+                    printf("\n|TCP Header|\n");
+
+                    printf("\nSource Port: %d\n",ntohs(tcpheader->source_port));
+                    printf("Destination Port: %d\n",ntohs(tcpheader->destination_port));
+                    printf("Sequence Number: %d\n",ntohs(tcpheader->sequence_number));
+                    printf("Acknowledgment Number: %d\n",ntohs(tcpheader->acknowledgment_number));
+                    printf("Data Offset: %d\n", tcpheader->data_offset);
+                    printf("Reserved: %d\n", tcpheader->reserved);
+
+                    printf("CWR Flag: %d\n", tcpheader->CWR);
+                    printf("ECE Flag: %d\n", tcpheader->ECE);
+                    printf("URG Flag: %d\n", tcpheader->URG);
+                    printf("ACK Flag: %d\n", tcpheader->ACK);
+                    printf("PSH Flag: %d\n", tcpheader->PSH);
+                    printf("RST Flag: %d\n", tcpheader->RST);
+                    printf("SYN Flag: %d\n", tcpheader->SYN);
+                    printf("FIN Flag: %d\n", tcpheader->FIN);
+
+                    printf("Window Size: %d\n",ntohs(tcpheader->window_size));
+                    printf("Checksum: %02X\n", ntohs(tcpheader->checksum));
+                    printf("Urgent Pointer: %d\n",ntohs(tcpheader->urgent_pointer));
                 }
             }
 
