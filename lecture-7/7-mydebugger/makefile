@@ -9,14 +9,14 @@ OBJDIR = ./obj
 _DEPS = sdlogger.h
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = loggerTest.o sdlogger.o
+_OBJS = loggerTest.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) ../../my-static-library/libsdlogger.a
 
 .PHONY: clean
 clean:

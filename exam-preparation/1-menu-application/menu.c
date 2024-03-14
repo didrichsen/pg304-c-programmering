@@ -1,6 +1,9 @@
+#include "include/menuapplication.h"
+#include "include/sdlogger.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void printMenu(){
 
@@ -16,9 +19,6 @@ int userInput(char firstOption, char lastOption){
 
     char cInput[10];
     int iChoice = -1;
-
-    printf("Enter your menu option followed by ENTER: \n");
-    printMenu();
 
     do {
 
@@ -47,14 +47,72 @@ int userInput(char firstOption, char lastOption){
 
 
         }else{
-
                 iChoice = atoi(cInput);
-
         }
 
 
     } while (iChoice == -1);
 
     return iChoice;
+
+}
+
+void chooseOperation(int option){
+
+    switch (option) {
+        case 1:
+            printf("Started process.. 1\n");
+            usleep(2000000);
+            break;
+        case 2:
+            printf("Started process 2\n");
+            break;
+        case 3:
+            printf("Started process 3\n");
+            break;
+        case 4:
+            printf("Started process 3\n");
+            break;
+        case 5:
+            printf("Exiting program.\n");
+            break;
+        default:
+            printf("Invalid option.\n");
+    }
+
+}
+
+void *createNode(int iSize, char *psBuffer){
+
+    Node *pThis = NULL;
+    pThis = malloc(sizeof (Node) + iSize);
+    if(pThis != NULL){
+        memset(pThis,0,sizeof (Node) + iSize);
+        memcpy(pThis->cBuff,psBuffer,iSize);
+    }
+
+    return pThis;
+
+}
+
+void insertNode(Node **pHead, int iSize, char *psBuffer){
+
+    Node *pThis = createNode(iSize,psBuffer);
+
+    if(pThis == NULL){
+        sddebug("Failed to create node.");
+        return;
+    }
+
+    //If there is a node there, we want to set previous before we move head pointer.
+    //If head is null, then we get a segment fault.
+    if((*pHead) != NULL){
+        (*pHead)->pPrevious = pThis;
+    }
+
+    pThis->pNext = (*pHead);
+    (*pHead) = pThis;
+
+    printf("%s\n", (*pHead)->cBuff);
 
 }
