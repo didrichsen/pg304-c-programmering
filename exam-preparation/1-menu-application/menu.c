@@ -95,24 +95,56 @@ void *createNode(int iSize, char *psBuffer){
 
 }
 
-void insertNode(Node **pHead, int iSize, char *psBuffer){
+//Adds node to head
+int insertNode(List *pList, int iSize, char *psBuffer){
 
     Node *pThis = createNode(iSize,psBuffer);
 
     if(pThis == NULL){
         sddebug("Failed to create node.");
-        return;
+        return FALSE;
     }
 
-    //If there is a node there, we want to set previous before we move head pointer.
-    //If head is null, then we get a segment fault.
-    if((*pHead) != NULL){
-        (*pHead)->pPrevious = pThis;
+    //List has existing Nodes
+    if(pList->pHead == NULL){
+        pThis->pNext = NULL;
+        pThis->pPrevious = NULL;
+        pList->pHead = pThis;
+        pList->pTail = pThis;
+        //List is empty
+    } else{
+        pThis->pNext = pList->pHead;
+        pList->pHead->pPrevious = pThis;
+        pList->pHead = pThis;
+        pThis->pPrevious = NULL;
     }
 
-    pThis->pNext = (*pHead);
-    (*pHead) = pThis;
+    return TRUE;
 
-    printf("%s\n", (*pHead)->cBuff);
+}
+
+//Adds node to tail
+int addNode(List *pList, int iSize, char *psBuffer){
+
+    Node *pThis = createNode(iSize,psBuffer);
+
+    if(pThis == NULL){
+        sddebug("Failed to create node.");
+        return FALSE;
+    }
+
+    if(pList->pTail == NULL){
+        pThis->pNext = NULL;
+        pThis->pPrevious = NULL;
+        pList->pHead = pThis;
+        pList->pTail = pThis;
+    } else{
+        pList->pTail->pNext = pThis;
+        pThis->pPrevious = pList->pTail;
+        pThis->pPrevious = NULL;
+        pList->pTail = pThis;
+    }
+
+    return TRUE;
 
 }
