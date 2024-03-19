@@ -82,13 +82,14 @@ void chooseOperation(int option){
 
 }
 
-void *createNode(int iSize, char *psBuffer){
+void *createNode(int iSize, char *psBuffer, int id){
 
     Node *pThis = NULL;
     pThis = malloc(sizeof (Node) + iSize);
     if(pThis != NULL){
         memset(pThis,0,sizeof (Node) + iSize);
         memcpy(pThis->cBuff,psBuffer,iSize);
+        pThis->id = id;
     }
 
     return pThis;
@@ -96,22 +97,23 @@ void *createNode(int iSize, char *psBuffer){
 }
 
 //Adds node to head
-int insertNode(List *pList, int iSize, char *psBuffer){
+int insertNode(List *pList, int iSize, char *psBuffer, int id){
 
-    Node *pThis = createNode(iSize,psBuffer);
+    Node *pThis = createNode(iSize,psBuffer,id);
 
     if(pThis == NULL){
-        sddebug("Failed to create node.");
-        return FALSE;
+        //sddebug("Failed to create node.");
+        return FAIL;
     }
 
-    //List has existing Nodes
+    //List is empty
     if(pList->pHead == NULL){
         pThis->pNext = NULL;
         pThis->pPrevious = NULL;
         pList->pHead = pThis;
         pList->pTail = pThis;
-        //List is empty
+
+        //List has existing nodes
     } else{
         pThis->pNext = pList->pHead;
         pList->pHead->pPrevious = pThis;
@@ -119,18 +121,18 @@ int insertNode(List *pList, int iSize, char *psBuffer){
         pThis->pPrevious = NULL;
     }
 
-    return TRUE;
+    return SUCCESS;
 
 }
 
 //Adds node to tail
-int addNode(List *pList, int iSize, char *psBuffer){
+int addNode(List *pList, int iSize, char *psBuffer, int id){
 
-    Node *pThis = createNode(iSize,psBuffer);
+    Node *pThis = createNode(iSize,psBuffer,id);
 
     if(pThis == NULL){
-        sddebug("Failed to create node.");
-        return FALSE;
+        //sddebug("Failed to create node.");
+        return FAIL;
     }
 
     if(pList->pTail == NULL){
@@ -141,10 +143,94 @@ int addNode(List *pList, int iSize, char *psBuffer){
     } else{
         pList->pTail->pNext = pThis;
         pThis->pPrevious = pList->pTail;
-        pThis->pPrevious = NULL;
+        pThis->pNext = NULL;
         pList->pTail = pThis;
     }
 
-    return TRUE;
+    return SUCCESS;
+}
+
+//Add to location
+int insertAfter(List *pList, int iSize, char *psBuffer, int insertAfterId, int id){
+
+    Node *pThis = createNode(iSize,psBuffer,id);
+
+    if(pThis == NULL){
+        //sddebug("Failed to create node.");
+        return FAIL;
+    }
+
+    Node *pCurrent = pList->pHead;
+
+    while (pCurrent != NULL){
+        if(pCurrent->id == insertAfterId){
+            pThis->pNext = pCurrent->pNext;
+            pThis->pPrevious = pCurrent;
+
+            if(pCurrent->pNext != NULL){
+                pCurrent->pNext->pPrevious = pThis;
+            } else{
+                //Hvis current.next == NULL så vil pThis være siste node.
+                pList->pTail = pThis;
+            }
+
+            pCurrent->pNext = pThis;
+
+            return SUCCESS;
+        }
+
+        pCurrent = pCurrent->pNext;
+    }
+
+    //We didnt find the node to insert after
+    free(pThis);
+    return FAIL;
+}
+
+//Deletes head of list.
+int deleteHead(List *pList){
+
+    if(pList == NULL || pList->pHead == NULL){
+        return FAIL;
+    }
+
+    Node *current = pList->pHead;
+
+    if(current->pNext != NULL) {
+        current->pNext->pPrevious = NULL;
+    } else {
+        //It was the last node in list.
+        pList->pTail = NULL;
+    }
+
+    pList->pHead = current->pNext;
+
+    free(current);
+
+    return SUCCESS;
+
+}
+
+//Deletes tail
+int deleteTail(List *pList){
+
+    if(pList == NULL || pList->pTail == NULL){
+        return FAIL;
+    }
+
+    Node *current = pList->pTail;
+
+    if(current->pPrevious != NULL) {
+        current->pPrevious->pNext = NULL;
+    } else {
+        //We need to update pointer since there was only one node in the list, or else dangling pointer.
+        pList->pHead = NULL;
+    }
+
+    pList->pTail = current->pPrevious;
+
+    free(current);
+
+    return SUCCESS;
 
 }

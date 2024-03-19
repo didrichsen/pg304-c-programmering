@@ -4,6 +4,7 @@
 typedef struct _Node{
     struct _Node *pNext;
     struct _Node *pPrevious;
+    int id;
     char cBuff[];
 }Node;
 
@@ -12,14 +13,17 @@ typedef struct _List{
     struct _Node *pTail;
 }List;
 
-#define TRUE 0
-#define FALSE 1
+#define SUCCESS 0
+#define FAIL 1
 
 void printMenu();
 int userInput(char firstOption, char lastOption);
 void chooseOperation(int option);
-void *createNode(int iSize, char *psBuffer);
-int insertNode(List *pHead, int iSize, char *psBuffer);
-int addNode(List *pHead, int iSize, char *psBuffer);
+void *createNode(int iSize, char *psBuffer, int id);
+int insertNode(List *pHead, int iSize, char *psBuffer, int id);
+int addNode(List *pHead, int iSize, char *psBuffer, int id);
+int insertAfter(List *pList, int iSize, char *psBuffer, int insertAfterId, int id);
+int deleteHead(List *pList);
+int deleteTail(List *pList);
 
 #endif //C_PROGRAMMERING_MENU_APPLICATION_H
