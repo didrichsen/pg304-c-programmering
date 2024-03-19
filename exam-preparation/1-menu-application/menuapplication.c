@@ -1,90 +1,66 @@
 #include "include/menuapplication.h"
-#include "include/sdlogger.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-int main(int argc,char* argv[]){
 
+int main(int argc, char* argv[]) {
     List myList;
     myList.pHead = NULL;
     myList.pTail = NULL;
 
-
-    int choice = -1;
-
-    char *psBuffer = "simen";
-    char *psBufferTwo = "nemis";
-    char *psBufferThree = "nemik";
-    int size = strlen(psBuffer) + 1;
-    printf("Size: %d\n", size);
-    int iResponseCode = 0;
-
-    iResponseCode = insertNode(&myList,size,psBuffer, 1);
-
-    if(iResponseCode == 1){
-        printf("Fail");
-    }else{
-        printf("Head: %s\n",myList.pHead->cBuff);
-        printf("Tail: %s\n",myList.pTail->cBuff);
+    // Add nodes to the list
+    addNode(&myList, 10, "First", 1);
+    addNode(&myList, 10, "Second", 2);
+    printList(&myList);
+    //Expected output
+    //First
+    //Second
+    insertNode(&myList, 10, "Third", 3);
+    printList(&myList);
+    //Expected output
+    //Third
+    //First
+    //Second
+    insertAfter(&myList, 10, "Fourth", 1, 4); // Insert after node with id 1
+    printList(&myList);
+    //Expected output
+    //Third
+    //First
+    //Fourth
+    //Second
+    // Find a node
+    Node* foundNode = findNode(&myList, 2);
+    if (foundNode != NULL) {
+        printf("Found node with id 2: %s\n", foundNode->cBuff);
     }
 
-    iResponseCode = addNode(&myList,size,psBufferTwo,2);
-
-    if(iResponseCode == 1){
-        printf("Fail");
-    }else{
-        printf("Head: %s\n",myList.pHead->cBuff);
-        printf("Tail: %s\n", myList.pTail->cBuff);
+    // Swap nodes
+    Node* nodeOne = findNode(&myList, 3);
+    Node* nodeTwo = findNode(&myList, 4);
+    if (nodeOne != NULL && nodeTwo != NULL) {
+        swapNodes(&myList, nodeOne, nodeTwo);
     }
 
-    iResponseCode = insertAfter(&myList,size,psBufferThree,1,3);
+    printList(&myList);
+    //Expected output
+    //Fourth
+    //First
+    //Third
+    //Second
 
-    if(iResponseCode == 1){
-        printf("Fail");
-    }else{
-        printf("Inserted after head: %s\n",myList.pHead->pNext->cBuff);
-        printf("Tail: %s\n", myList.pTail->cBuff);
-    }
+    // Delete nodes
+    deleteHead(&myList);
+    deleteTail(&myList);
+    deleteBasedOnID(&myList, 2);
+    printList(&myList);
+    //Expected output
+    //First
+    //Third
 
-    iResponseCode = deleteHead(&myList);
-
-    if(iResponseCode == 1){
-        printf("Failed");
-    } else{
-        printf("Head deleted. New head: %s\n",myList.pHead->cBuff);
-    }
-
-    iResponseCode = deleteTail(&myList);
-
-    if(iResponseCode == 1){
-        printf("Failed");
-    } else{
-        printf("Tail deleted. New tail: %s\n",myList.pTail->cBuff);
-    }
-
-
-/*
-    printf("Press corresponding number and ENTER to start process.\n");
-
-    do {
-
-        printMenu();
-        choice = userInput('1','5');
-        chooseOperation(choice);
-
-
-    } while (choice != 5);
+    // Delete all nodes
+    deleteAll(&myList);
+    printList(&myList);
+    //Expected output
+    //List is emtpy.
 
     return 0;
-    */
-
-    Node *current;
-    while (myList.pHead != NULL){
-        current = myList.pHead;
-        printf("%s\n",current->cBuff);
-        myList.pHead = current->pNext;
-        free(current);
-    }
-
 }

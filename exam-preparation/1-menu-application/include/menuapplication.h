@@ -25,5 +25,12 @@ int addNode(List *pHead, int iSize, char *psBuffer, int id);
 int insertAfter(List *pList, int iSize, char *psBuffer, int insertAfterId, int id);
 int deleteHead(List *pList);
 int deleteTail(List *pList);
+int swapNodes(List *pList, Node *nodeOne, Node *nodeTwo);
+Node *findNode(List *pList, int id);
+int deleteAll(List *pList);
+int deleteBasedOnID(List *pList, int id);
+void printList(List *pList);
+
+
 
 #endif //C_PROGRAMMERING_MENU_APPLICATION_H
