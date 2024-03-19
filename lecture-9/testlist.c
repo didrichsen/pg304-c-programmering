@@ -67,7 +67,7 @@ static void PrintList (LIST *pThis)
 {
    int i = 0;
    while (pThis) {
-      printf ("%d: %s\n", ++i, pThis->cBuf);
+      printf ("%d: %s\n", ++i, pThis->byBuf);
       pThis = pThis->pNext;
    }
    printf ("\n");
