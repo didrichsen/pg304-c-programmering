@@ -1,0 +1,15 @@
+yrke="Student"
+interesser="Programmering"
+bosted="Oslo"
+nasjonalitet="Norsk"
+utdanningsinstitusjon="Universitetet i Oslo"
+favorittmat="Pizza"
+hobbyer="Løping, Sjakk"
+kjæledyrtype="Hund"
+kjæledyrnavn="Max"
+favorittbok="1984 av George Orwell"
+favorittmusikk="Rock"
+alder=22
+antallKjæledyr=1
+favorittnummer=7
+weiohfoiawehfhjaerjioppwqjeafjahiorhgtpwhqeighapowjehpotjqwjepfgqewhtiogahweifhiqwhgpihw="svein"
