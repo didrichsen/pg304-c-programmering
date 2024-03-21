@@ -15,6 +15,10 @@ int main(void){
     char *pKey = NULL;
     char *pValue = NULL;
 
+    RETURN_OBJECT *myResult = NULL;
+    myResult = malloc(sizeof (RETURN_OBJECT));
+    memset(myResult,0,sizeof (RETURN_OBJECT));
+
     pFile = fopen("keyvalue.txt","r");
 
     while (fgets(cBuffer,BUFFFERSZE,pFile) != NULL){
@@ -32,7 +36,8 @@ int main(void){
                     keySize = i;
                 }
 
-                //We use the i - keysize - 1 to subtract everything before and including the equal sign
+                //We use the i - keysize - 1 to subtract everything before and including the equal sign.
+                //Also extracting the new line char.
                 if(cBuffer[i] == '\n'){
                     valueSize = i - keySize - 1;
                 }
@@ -65,13 +70,17 @@ int main(void){
     }
 
 
-    RETURN_VALUE result = LookUp(&pHead,"favorittmat");
+   LookUp(&pHead,"alder", myResult);
 
-    if(result.iIsString){
-        printf("Value: %s\n", result.value.pszValue);
-    } else {
-        printf("Value: %d\n", result.value.iValue);
-    }
+
+        if (myResult->pszValue != NULL) {
+            printf("Value: %s\n", myResult->pszValue);
+        } else{
+            printf("Value: %d\n", myResult->iValue);
+        }
+
+
+
 
     printf("--------------\n");
 
@@ -81,7 +90,7 @@ int main(void){
     while (pCurrent != NULL){
         pTemp = pCurrent;
         pCurrent = pCurrent->pNext;
-        //printNode(pTemp);
+        printNode(pTemp);
         free(pTemp);
     }
 

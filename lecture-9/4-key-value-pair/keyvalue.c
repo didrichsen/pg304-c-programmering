@@ -122,37 +122,26 @@ int InsertSorted(LIST **pHead, char *pKey, char *pValue, int iValueSize){
     return 0;
 }
 
-RETURN_VALUE LookUp(LIST **pHead,const char *pKey){
-
-    RETURN_VALUE myResult;
+RETURN_OBJECT *LookUp(LIST **pHead,const char *pKey, RETURN_OBJECT *resultObject){
 
     if(*pHead == NULL){
         printf("List is empty.\n");
-        myResult.iIsString = -1;
-        return myResult;
+        return NULL;
     }
 
     LIST *pCurrent = *pHead;
 
     while (pCurrent != NULL){
         if(strcmp(pCurrent->szKey,pKey) == 0){
-            if(pCurrent->pszValue != NULL){
-                myResult.iIsString = 1;
-                myResult.value.pszValue = pCurrent->pszValue;
-                return myResult;
-            } else{
-                myResult.iIsString = 0;
-                myResult.value.iValue = pCurrent->iValue;
-                return myResult;
-            }
+            resultObject->pszValue = pCurrent->pszValue;
+            resultObject->iValue = pCurrent->iValue;
+            return resultObject;
         } else{
             pCurrent = pCurrent->pNext;
         }
     }
 
-    myResult.iIsString = -1;
-
-    return myResult;
+    return NULL;
 
 }
 

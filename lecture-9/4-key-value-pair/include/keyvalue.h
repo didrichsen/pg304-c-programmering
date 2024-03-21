@@ -23,9 +23,14 @@ typedef struct _RETURN_VALUE {
     } value;
 } RETURN_VALUE;
 
+typedef struct _RETURN_OBJECT{
+    char *pszValue;
+    int iValue;
+} RETURN_OBJECT;
+
 void *createNode(char *pKey, char *pValue, int iValueSize);
 void printNode(LIST *pNode);
 int InsertSorted(LIST **pHead, char *pKey, char *pValue, int iValueSize);
-RETURN_VALUE LookUp(LIST **pHead,const char *pKey);
+RETURN_OBJECT *LookUp(LIST **pHead,const char *pKey, RETURN_OBJECT *resultObject);
 
 #endif //PG304_C_PROGRAMMERING_KEYVALUE_H
