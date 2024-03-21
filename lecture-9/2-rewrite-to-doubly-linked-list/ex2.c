@@ -41,6 +41,7 @@ int InsertInList (LIST *pList, void *pvData, int iSze)
         return iRc;
     }
 
+    //Empty list
     if(pList->pHead == NULL){
         pList->pHead = pThis;
         pList->pTail = pThis;
@@ -121,25 +122,51 @@ int AddToList (LIST *pList, void *pvData, int iSze)
 
 int RemoveFromList (LIST *pList, NODE *pToDelete)
 {
+
+    if (pList == NULL || pToDelete == NULL) return ERROR;
+
     int iRc = ERROR;
     NODE *pThis = NULL;
+    NODE *pPrev = NULL;
 
-    if (pList->pHead == pToDelete) {
-        if(pList->pHead->pNext == NULL){
-            pList->pTail = NULL;
-        }
+    //List is empty
+    if(pList->pHead == NULL){
+        return ERROR;
+    }
+
+    //Deleting only element in list
+    if(pList->pHead == pToDelete && pList->pTail == pToDelete){
+        pList->pHead = NULL;
+        pList->pTail = NULL;
+        return iRc = OK;
+    }
+
+    //Deleting head
+    else if (pList->pHead == pToDelete){
         pList->pHead = pToDelete->pNext;
-        iRc = OK;
-    } else{
+        pList->pHead->pPrev = NULL;
+        return iRc = OK;
+    }
+
+    //Deleting tail
+    else if(pList->pTail == pToDelete){
+        pList->pTail = pToDelete->pPrev;
+        pList->pTail->pNext = NULL;
+        return iRc = OK;
+    }
+
+    //Deleting some other element
+    else{
         pThis = pList->pHead;
         while (pThis != NULL){
-            if(pThis->pNext == pToDelete){
-                pThis->pNext = pToDelete->pNext;
-                pToDelete->pNext->pPrev = pThis;
+            if(pThis == pToDelete){
+                pPrev->pNext = pThis->pNext;
+                pThis->pNext->pPrev = pThis->pPrev;
 
                 iRc = OK;
                 break;
             }
+            pPrev = pThis;
             pThis = pThis->pNext;
         }
     }
