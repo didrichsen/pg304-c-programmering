@@ -14,8 +14,6 @@ int main(void){
     int valueSize = 0;
     char *pKey = NULL;
     char *pValue = NULL;
-    int iNodeCounter = 1;
-    int iRc = 0;
 
     pFile = fopen("keyvalue.txt","r");
 
@@ -61,16 +59,21 @@ int main(void){
 
             InsertSorted(&pHead,pKey,pValue,valueSize);
 
-
             free(pKey);
             free(pValue);
-
-
-
-
         }
-
     }
+
+
+    RETURN_VALUE result = LookUp(&pHead,"favorittmat");
+
+    if(result.iIsString){
+        printf("Value: %s\n", result.value.pszValue);
+    } else {
+        printf("Value: %d\n", result.value.iValue);
+    }
+
+    printf("--------------\n");
 
     LIST *pCurrent = pHead;
     LIST *pTemp = NULL;
@@ -78,11 +81,9 @@ int main(void){
     while (pCurrent != NULL){
         pTemp = pCurrent;
         pCurrent = pCurrent->pNext;
-        printNode(pTemp);
+        //printNode(pTemp);
         free(pTemp);
     }
-
-
 
     return 0;
 }

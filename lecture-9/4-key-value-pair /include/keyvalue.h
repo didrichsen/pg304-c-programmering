@@ -15,8 +15,17 @@ typedef struct _LIST {
     int  iValue;
 } LIST;
 
+typedef struct _RETURN_VALUE {
+    int iIsString;
+    union {
+        char *pszValue;
+        int iValue;
+    } value;
+} RETURN_VALUE;
+
 void *createNode(char *pKey, char *pValue, int iValueSize);
 void printNode(LIST *pNode);
 int InsertSorted(LIST **pHead, char *pKey, char *pValue, int iValueSize);
+RETURN_VALUE LookUp(LIST **pHead,const char *pKey);
 
 #endif //PG304_C_PROGRAMMERING_KEYVALUE_H
