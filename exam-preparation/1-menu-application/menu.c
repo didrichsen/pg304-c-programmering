@@ -1,55 +1,127 @@
-#include "include/menuapplication.h"
-#include "include/sdlogger.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-void printMenu(){
+#include "include/menuapplication.h"
+#include "include/sdlogger.h"
 
-    printf("1 - Option One\n");
-    printf("2 - Option Two\n");
-    printf("3 - Option Three\n");
-    printf("4 - Option Four\n");
-    printf("5 - Exit\n");
+//Prints menu.
+static void PrintMenu() {
+
+    printf("\x1b[1;36m");
+    printf("*************************\r\n");
+    printf("*       MAIN MENU       *\r\n");
+    printf("*************************\r\n");
+    printf("\r\nPlease select an option:\r\n");
+    printf("> 1 -\tAdd Movie\r\n");
+    printf("> 2 -\tRemove Movie\r\n");
+    printf("> 3 -\tOption Three\r\n");
+    printf("> 4 -\tOption Four\r\n");
+    printf("> 5 -\tExit\r\n");
+    printf("*************************\r\n");
+    printf("\x1b[0m");
 
 }
 
-int userInput(char firstOption, char lastOption){
+//Removes spaces, newline char and forces zero terminator to be the last char.
+static void SanitizeInput (char *psText){
 
-    char cInput[10];
-    int iChoice = -1;
+    char *d;
+    char *end;
+    long length;
+
+    d = psText;
+
+    //Whitespace in front
+    //Move until I hit first character
+    while (*d == ' '){
+        ++d;
+    }
+
+    end = d;
+    //Move end to newline character
+    while (*end != '\0' && *end != '\n'){
+        ++end;
+    }
+
+    if(*end == '\n'){
+        *end = '\0';
+    }
+
+    //Moving end back from zero terminator
+    end--;
+
+    //Moving it back until it hits the last character
+    while (end > d && *end == ' '){
+        --end;
+    }
+
+    //Adding zero terminator
+    *(end + 1) = '\0';
+
+    //The pointer arithmetic doesn't include the last pointer when calculating addresses, so I have to add 1.
+    length = end - d + 1;
+
+    //Using memmove since im copying from same memory space. Safer than memcopy.
+    //I add +1 to account for \0
+    memmove(psText,d,length + 1);
+
+}
+
+//Returns a zero terminated string not longer than iSize.
+void GetZeroTerminatedUserInput(char *pszBufferDestination, int iSize){
+
+    char szLocalBuffer[BUFFER_SIZE] = {0};
+    int iInputValid = FALSE;
 
     do {
 
-        //Clear the buffer before each iteration.
-        memset(cInput,0,sizeof (cInput));
+        iInputValid = TRUE;
 
-        //We allocate 10 bytes, but we only need 3 for this menu. Choice + Zero terminator + new line
-        if(fgets(cInput,sizeof (cInput),stdin) == NULL){
-            printf("Error while reading input\n");
-            //Continue to skip everything in while loop and start over.
-            continue;
-        };
+        fgets(szLocalBuffer,BUFFER_SIZE-1, stdin);
 
-        //If strst == NULL it means input was too long since it wasent room for "\n"
-        if((strstr(cInput,"\n")) == NULL){
+        //If strstr returns NULL it means input was too long since it wasent room for "\n"
+        if((strstr(szLocalBuffer,"\n")) == NULL || strlen(szLocalBuffer) > iSize) {
 
+            printf("Input to long.\r\n");
             //Empty buffer. We empty all the way until \n since there are still chars in the buffer.
             while (getchar() != '\n');
 
-            printf("Input to long.\nOnly menu option followed by Enter.\n");
-
-            //If we enter else if, it means the user has made an invalid input.
-        } else if(cInput[0] < firstOption || cInput[0] > lastOption) {
-
-            printf("You have to stay within menu length, %c - %c\n",firstOption,lastOption);
-
-
-        }else{
-                iChoice = atoi(cInput);
+            iInputValid = FALSE;
         }
 
+    } while (iInputValid);
+
+    SanitizeInput(szLocalBuffer);
+
+    strncpy(pszBufferDestination,szLocalBuffer,iSize);
+
+}
+
+//Makes use of GetZeroTerminatedUserInput but also do a couple of checks that specific to menu option.
+static int GetMenuInput(char firstOption, char lastOption){
+
+    char cInput[10] = {0};
+    int iChoice = -1;
+
+    PrintMenu();
+
+    do {
+
+        GetZeroTerminatedUserInput(cInput,10);
+
+        //We check [0] which should be within range in the ASCII Table.
+        //If [1] is not \0 then the user has inputted higher number than 10.
+        if(cInput[0] < firstOption || cInput[0] > lastOption || cInput[1] != '\0') {
+
+            printf("You have to stay within menu length, %c - %c\r\n",firstOption,lastOption);
+
+        }else{
+
+                iChoice = atoi(cInput);
+
+        }
 
     } while (iChoice == -1);
 
@@ -57,28 +129,159 @@ int userInput(char firstOption, char lastOption){
 
 }
 
-void chooseOperation(int option){
+//Checks the option return from GetMenuInput and return the corresponding enum value.
+enum MENUOPTIONS GetMenuOption(){
 
-    switch (option) {
-        case 1:
-            printf("Started process.. 1\n");
-            usleep(2000000);
-            break;
-        case 2:
-            printf("Started process 2\n");
-            break;
-        case 3:
-            printf("Started process 3\n");
-            break;
-        case 4:
-            printf("Started process 3\n");
-            break;
-        case 5:
-            printf("Exiting program.\n");
-            break;
-        default:
-            printf("Invalid option.\n");
+    int option = GetMenuInput('1','5');
+
+    if(option == 1){
+        return MENU_OPTION_ADD_MOVIE;
+    } else if(option == 2){
+        return MENU_OPTION_REMOVE_MOVIE;
+    } else if(option == 3){
+        return MENU_OPTION_THREE;
+    } else if(option == 4){
+        return MENU_OPTION_FOUR;
+    } else if(option == 5){
+        return MENU_OPTION_EXIT;
+    } else {
+        return MENU_OPTION_NOT_INITIALIZED;
     }
+}
+
+//Creating a movie that later can be placed into a doubly linked list.
+static void *CreateMovie(char *pszTitle, int iReleaseYear){
+
+    if(pszTitle == NULL){
+        return NULL;
+    }
+
+    MOVIE *pThis = (MOVIE *) malloc(sizeof (MOVIE));
+
+    if(pThis == NULL){
+        return NULL;
+    }
+
+    memset(pThis,0,sizeof (MOVIE));
+
+    pThis->iReleaseYear = iReleaseYear;
+
+    pThis->szMovieTitle = malloc(strlen(pszTitle) + 1);
+
+    if(pThis->szMovieTitle == NULL){
+        free(pThis);
+        return NULL;
+    }
+
+    strncpy(pThis->szMovieTitle,pszTitle, strlen(pszTitle));
+    //Since we here are working on index I can use strlen to place \0 at the last index.
+    pThis->szMovieTitle[strlen(pszTitle)] = '\0';
+
+    return pThis;
+
+}
+
+//Inserting a movie at the head of the doubly linked list.
+int InsertMovie(MOVIE_LIST *pList, char *pszTitle, int iReleaseYear){
+
+    MOVIE *pThis = CreateMovie(pszTitle, iReleaseYear);
+
+    if(pThis == NULL){
+        //sddebug("Failed to create node.");
+        return ERROR;
+    }
+
+    //List is empty
+    if(pList->pHead == NULL){
+        pThis->pNext = NULL;
+        pThis->pPrevious = NULL;
+        pList->pHead = pThis;
+        pList->pTail = pThis;
+
+        //List has existing movies
+    } else{
+        pThis->pNext = pList->pHead;
+        pList->pHead->pPrevious = pThis;
+        pList->pHead = pThis;
+        pThis->pPrevious = NULL;
+    }
+
+    return SUCCESS;
+
+}
+
+//Delete movie based on title.
+int DeleteMovieBasedOnTitle(MOVIE_LIST *pList, char *pszMovieTitle){
+
+    //Checking if list in not existing or if list are empty.
+    if(pList == NULL || pList->pHead == NULL){
+        return ERROR;
+    }
+
+    MOVIE *pCurrent = pList->pHead;
+
+    while (pCurrent != NULL){
+        if(strcmp(pCurrent->szMovieTitle,pszMovieTitle) == 0){
+
+            //Deleting head
+            if(pCurrent->pPrevious == NULL){
+                if(pCurrent->pNext == NULL){
+                    //pCurrent is the only movie in the list.
+                    pList->pTail = NULL;
+                    pList->pHead = NULL;
+                }  else {
+                    pCurrent->pNext->pPrevious = NULL;
+                    pList->pHead = pCurrent->pNext;
+                }
+            }
+            //Deleting tail
+            else if (pCurrent->pNext == NULL){
+                pCurrent->pPrevious->pNext = NULL;
+                pList->pTail = pCurrent->pPrevious;
+            }
+
+            //Deleting somewhere in the middle
+            else{
+                pCurrent->pPrevious->pNext = pCurrent->pNext;
+                pCurrent->pNext->pPrevious = pCurrent->pPrevious;
+            }
+
+            free(pCurrent->szMovieTitle);
+            free(pCurrent);
+
+            return SUCCESS;
+
+        }
+        pCurrent = pCurrent->pNext;
+    }
+
+    return ERROR;
+
+}
+
+//Deletes all movies in list.
+int DeleteMovies(MOVIE_LIST *pList){
+
+    if(pList == NULL){
+        return ERROR;
+    }
+
+    MOVIE *pCurrent = pList->pHead;
+    MOVIE *pTemp;
+
+    while (pCurrent != NULL){
+        pTemp = pCurrent;
+        pCurrent = pCurrent->pNext;
+        if(pTemp->szMovieTitle != NULL){
+            free(pTemp->szMovieTitle);
+        }
+        free(pTemp);
+    }
+
+    pList->pHead = NULL;
+    pList->pTail = NULL;
+
+    return SUCCESS;
 
 }
 

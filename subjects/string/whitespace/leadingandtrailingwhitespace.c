@@ -34,28 +34,34 @@ void TrimSpaces (char *psText){
 
     d = psText;
 
+    //Whitespace in front
+    //Move until I hit first character
     while (*d == ' '){
         ++d;
     }
 
     end = d;
+    //Move end to zero terminator
     while (*end != '\0'){
         ++end;
     }
 
     end--;
 
+    //Moving end back from zero terminator
+    //Moving it back until it hits the last character
     while (end > d && *end == ' '){
         --end;
     }
 
+    //Adding zero terminator
     *(end + 1) = '\0';
 
-    //The pointer dosent include the last pointer, so I have to add 1.
+    //The pointer arithmetic dosent include the last pointer when calculating addresses, so I have to add 1.
     length = end - d + 1;
 
-    printf("%lu\n", length);
-
+    //Using memmove since im copying from same memory space. Safer than memcopy.
+    //I add +1 to account for \0
     memmove(psText,d,length + 1);
 
 
