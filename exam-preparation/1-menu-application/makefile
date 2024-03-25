@@ -1,15 +1,15 @@
 INCLDIR = ./include
-TARGET = menuapplication
+TARGET = movieapplication
 CC = gcc
 CFLAGS = -O0
 CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-_DEPS = sdlogger.h menuapplication.h
+_DEPS = actor.h input.h menu.h movie.h utils.h
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
-_OBJS = menu.o menuapplication.o
+_OBJS = utils.o movie.o movieapplication.o menu.o input.o actor.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)

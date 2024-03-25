@@ -1,8 +1,12 @@
-#include "include/menuapplication.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+#include "include/movie.h"
+#include "include/input.h"
+#include "include/menu.h"
+#include "include/utils.h"
 
 void ToMainMenu();
 
@@ -129,8 +133,6 @@ int main(int argc, char* argv[]) {
                 printf("Enter movie title\r\n");
                 GetZeroTerminatedUserInput(szMovieTitle, MAX_MOVIE_TITLE);
 
-                printf("Movie titled entered: %s\n",szMovieTitle);
-
                 pMovie = FindMovie(&movieList,szMovieTitle);
 
                 if(pMovie == NULL){
@@ -173,8 +175,7 @@ int main(int argc, char* argv[]) {
                 break;
             case MENU_OPTION_EXIT:
                 // Code to handle exit
-                printf("Exiting..\n");
-                usleep(2000000);
+                ExitProgram();
                 break;
             default:
                 // Code to handle invalid option
@@ -192,20 +193,4 @@ int main(int argc, char* argv[]) {
     }
 
     return 0;
-}
-
-void ToMainMenu(){
-    printf("Returning to main menu .");
-    fflush(stdout); // Ensure the output is printed immediately
-    usleep(750000); // Sleep for 500 milliseconds (0.5 seconds)
-
-    printf(" .");
-    fflush(stdout);
-    usleep(750000); // Sleep for another 500 milliseconds
-
-    printf(" .");
-    fflush(stdout);
-    usleep(750000); // Sleep for another 500 milliseconds
-
-    printf("\r\033[K");
 }
