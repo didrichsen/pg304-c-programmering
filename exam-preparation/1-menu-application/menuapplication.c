@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
     MOVIE_LIST movieList;
     movieList.pHead = NULL;
     movieList.pTail = NULL;
+    MOVIE *pMovie = NULL;
     //Used to store title of movie, MAX_MOVIE_TITLE 128 characters.
     char szMovieTitle[MAX_MOVIE_TITLE] = {0};
     //Buffer used for different user interactions. BUFFER_SIZE 256 characters.
@@ -22,6 +23,9 @@ int main(int argc, char* argv[]) {
     int iReleaseYear = 0;
     //Return code to check for errors
     int iRc = 0;
+    //Actors first name
+    char pszFirstName[MAX_NAME_SIZE] = {0};
+    char pszLastName[MAX_NAME_SIZE] = {0};
 
 
     do {
@@ -113,17 +117,59 @@ int main(int argc, char* argv[]) {
                 ToMainMenu();
 
                 break;
-            case MENU_OPTION_THREE:
-                // Code to handle option three
-                printf("Option 3 selected.\n");
-                // ... (other code for option three)
-                usleep(2000000);
+            case MENU_OPTION_ADD_ACTOR:
+
+                //Everything set to null or 0
+                memset(szMovieTitle, 0, MAX_MOVIE_TITLE);
+                memset(pszFirstName, 0, MAX_NAME_SIZE);
+                memset(pszLastName, 0, MAX_NAME_SIZE);
+                pMovie = NULL;
+
+                //Getting the title of the movie
+                printf("Enter movie title\r\n");
+                GetZeroTerminatedUserInput(szMovieTitle, MAX_MOVIE_TITLE);
+
+                printf("Movie titled entered: %s\n",szMovieTitle);
+
+                pMovie = FindMovie(&movieList,szMovieTitle);
+
+                if(pMovie == NULL){
+                    printf("\x1b[31m"); //Prints red text
+                    printf("Couldn't find movie title.\r\n");
+                    printf("\x1b[0m");
+                    break;
+                }
+
+                //Getting the first name of the actor
+                printf("Enter Actors First Name\r\n");
+                GetZeroTerminatedUserInput(pszFirstName, MAX_NAME_SIZE);
+
+                //Getting the last name of the actor
+                printf("Enter Actors Last Name\r\n");
+                GetZeroTerminatedUserInput(pszLastName, MAX_NAME_SIZE);
+
+                iRc = AddActors(pMovie->pActors,pszFirstName,pszLastName);
+
+                if(iRc == ERROR){
+                    printf("Couldn't add actor to movie.\r\n");
+                    break;
+                } else{
+                    printf("\x1b[32m");
+                    printf("Successfully added actor, %s %s,to movie with title, %s\r\n",pszFirstName,pszLastName, szMovieTitle);
+                    printf("\x1b[0m");
+                }
+
+                ToMainMenu();
+
                 break;
-            case MENU_OPTION_FOUR:
-                // Code to handle option four
-                printf("Option 4 selected.\n");
-                // ... (other code for option four)
+            case MENU_OPTION_VIEW_ALL_MOVIES:
+
+                ViewAllMovies(&movieList);
+
                 usleep(2000000);
+
+                ToMainMenu();
+
                 break;
             case MENU_OPTION_EXIT:
                 // Code to handle exit

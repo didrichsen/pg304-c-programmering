@@ -16,8 +16,8 @@ static void PrintMenu() {
     printf("\r\nPlease select an option:\r\n");
     printf("> 1 -\tAdd Movie\r\n");
     printf("> 2 -\tRemove Movie\r\n");
-    printf("> 3 -\tOption Three\r\n");
-    printf("> 4 -\tOption Four\r\n");
+    printf("> 3 -\tAdd Actor to Movie\r\n");
+    printf("> 4 -\tView all Movies\r\n");
     printf("> 5 -\tExit\r\n");
     printf("*************************\r\n");
     printf("\x1b[0m");
@@ -139,9 +139,9 @@ enum MENUOPTIONS GetMenuOption(){
     } else if(option == 2){
         return MENU_OPTION_REMOVE_MOVIE;
     } else if(option == 3){
-        return MENU_OPTION_THREE;
+        return MENU_OPTION_ADD_ACTOR;
     } else if(option == 4){
-        return MENU_OPTION_FOUR;
+        return MENU_OPTION_VIEW_ALL_MOVIES;
     } else if(option == 5){
         return MENU_OPTION_EXIT;
     } else {
@@ -173,6 +173,14 @@ static void *CreateMovie(char *pszTitle, int iReleaseYear){
         return NULL;
     }
 
+    pThis->pActors = (ACTORS_LIST*) malloc(sizeof (ACTORS_LIST));
+
+    if(pThis->pActors == NULL){
+        free(pThis->szMovieTitle);
+        free(pThis);
+        return NULL;
+    }
+    pThis->pActors->pHead = NULL;
     strncpy(pThis->szMovieTitle,pszTitle, strlen(pszTitle));
     //Since we here are working on index I can use strlen to place \0 at the last index.
     pThis->szMovieTitle[strlen(pszTitle)] = '\0';
@@ -246,6 +254,7 @@ int DeleteMovieBasedOnTitle(MOVIE_LIST *pList, char *pszMovieTitle){
                 pCurrent->pNext->pPrevious = pCurrent->pPrevious;
             }
 
+            DeleteActorList(pCurrent->pActors);
             free(pCurrent->szMovieTitle);
             free(pCurrent);
 
@@ -256,6 +265,24 @@ int DeleteMovieBasedOnTitle(MOVIE_LIST *pList, char *pszMovieTitle){
     }
 
     return ERROR;
+
+}
+
+MOVIE *FindMovie(MOVIE_LIST *pList,char *pszMovieTitle){
+
+    if(pList == NULL || pszMovieTitle == NULL){
+        return NULL;
+    }
+
+    MOVIE *pMovie = pList->pHead;
+    while (pMovie != NULL){
+        if(strcmp(pMovie->szMovieTitle,pszMovieTitle) == 0){
+            return pMovie;
+        }
+        pMovie = pMovie->pNext;
+    }
+
+    return NULL;
 
 }
 
@@ -275,6 +302,9 @@ int DeleteMovies(MOVIE_LIST *pList){
         if(pTemp->szMovieTitle != NULL){
             free(pTemp->szMovieTitle);
         }
+
+        DeleteActorList(pTemp->pActors);
+
         free(pTemp);
     }
 
@@ -285,331 +315,131 @@ int DeleteMovies(MOVIE_LIST *pList){
 
 }
 
-void *createNode(int iSize, char *psBuffer, int id){
-
-    Node *pThis = NULL;
-    pThis = malloc(sizeof (Node) + iSize);
-    if(pThis != NULL){
-        memset(pThis,0,sizeof (Node) + iSize);
-        memcpy(pThis->cBuff,psBuffer,iSize);
-        pThis->id = id;
-    }
-
-    return pThis;
-
-}
-
-//Adds node to head
-int insertNode(List *pList, int iSize, char *psBuffer, int id){
-
-    Node *pThis = createNode(iSize,psBuffer,id);
-
-    if(pThis == NULL){
-        //sddebug("Failed to create node.");
-        return FAIL;
-    }
-
-    //List is empty
-    if(pList->pHead == NULL){
-        pThis->pNext = NULL;
-        pThis->pPrevious = NULL;
-        pList->pHead = pThis;
-        pList->pTail = pThis;
-
-        //List has existing nodes
-    } else{
-        pThis->pNext = pList->pHead;
-        pList->pHead->pPrevious = pThis;
-        pList->pHead = pThis;
-        pThis->pPrevious = NULL;
-    }
-
-    return SUCCESS;
-
-}
-
-//Adds node to tail
-int addNode(List *pList, int iSize, char *psBuffer, int id){
-
-    Node *pThis = createNode(iSize,psBuffer,id);
-
-    if(pThis == NULL){
-        //sddebug("Failed to create node.");
-        return FAIL;
-    }
-
-    if(pList->pTail == NULL){
-        pThis->pNext = NULL;
-        pThis->pPrevious = NULL;
-        pList->pHead = pThis;
-        pList->pTail = pThis;
-    } else{
-        pList->pTail->pNext = pThis;
-        pThis->pPrevious = pList->pTail;
-        pThis->pNext = NULL;
-        pList->pTail = pThis;
-    }
-
-    return SUCCESS;
-}
-
-//Add to location
-int insertAfter(List *pList, int iSize, char *psBuffer, int insertAfterId, int id){
-
-    Node *pThis = createNode(iSize,psBuffer,id);
-
-    if(pThis == NULL){
-        //sddebug("Failed to create node.");
-        return FAIL;
-    }
-
-    Node *pCurrent = pList->pHead;
-
-    while (pCurrent != NULL){
-        if(pCurrent->id == insertAfterId){
-            pThis->pNext = pCurrent->pNext;
-            pThis->pPrevious = pCurrent;
-
-            if(pCurrent->pNext != NULL){
-                pCurrent->pNext->pPrevious = pThis;
-            } else{
-                //Hvis current.next == NULL så vil pThis være siste node.
-                pList->pTail = pThis;
-            }
-
-            pCurrent->pNext = pThis;
-
-            return SUCCESS;
-        }
-
-        pCurrent = pCurrent->pNext;
-    }
-
-    //We didnt find the node to insert after
-    free(pThis);
-    return FAIL;
-}
-
-//Deletes head of list.
-int deleteHead(List *pList){
-
-    if(pList == NULL || pList->pHead == NULL){
-        return FAIL;
-    }
-
-    Node *current = pList->pHead;
-
-    if(current->pNext != NULL) {
-        current->pNext->pPrevious = NULL;
-    } else {
-        //It was the last node in list.
-        pList->pTail = NULL;
-    }
-
-    pList->pHead = current->pNext;
-
-    free(current);
-
-    return SUCCESS;
-
-}
-
-//Deletes tail
-int deleteTail(List *pList){
-
-    if(pList == NULL || pList->pTail == NULL){
-        return FAIL;
-    }
-
-    Node *current = pList->pTail;
-
-    if(current->pPrevious != NULL) {
-        current->pPrevious->pNext = NULL;
-    } else {
-        //We need to update pointer since there was only one node in the list, or else dangling pointer.
-        pList->pHead = NULL;
-    }
-
-    pList->pTail = current->pPrevious;
-
-    free(current);
-
-    return SUCCESS;
-
-}
-
-int deleteBasedOnID(List *pList, int id){
-
-    if(pList == NULL || pList->pHead == NULL){
-        return FAIL;
-    }
-
-    Node *current = pList->pHead;
-
-    while (current != NULL){
-        if(current->id == id){
-
-            if(current->pPrevious == NULL){
-                pList->pHead = current->pNext;
-                if(current->pNext != NULL){
-                    current->pNext->pPrevious = NULL;
-                } else{
-                    //If we are here. This was the only node and we need to update tail.
-                    //Head will at this point already be NULL.
-                    pList->pTail = NULL;
-                }
-            } else {
-                current->pPrevious->pNext = current->pNext;
-
-                if(current->pNext != NULL){
-                    current->pNext->pPrevious = current->pPrevious;
-                } else{
-                    //If the current is the last node in the list
-                    pList->pTail = current->pPrevious;
-                }
-            }
-
-            free(current);
-
-            return SUCCESS;
-
-        }
-        current = current->pNext;
-    }
-
-    return FAIL;
-
-}
-
-int deleteAll(List *pList){
+int DeleteActorList(ACTORS_LIST *pList){
 
     if(pList == NULL){
-        return FAIL;
+        printf("List uninitialized.\r\n");
+        return ERROR;
     }
 
-    Node *pCurrent = pList->pHead;
-    Node *pTemp;
+    ACTOR *pCurrent = pList->pHead;
+    ACTOR *pTemp;
 
     while (pCurrent != NULL){
         pTemp = pCurrent;
         pCurrent = pCurrent->pNext;
+
+        if(pTemp->pszFirstName != NULL){
+            free(pTemp->pszFirstName);
+        }
+        if(pTemp->pszLastName != NULL){
+            free(pTemp->pszLastName);
+        }
+
         free(pTemp);
     }
 
     pList->pHead = NULL;
-    pList->pTail = NULL;
 
     return SUCCESS;
 
 }
 
-Node *findNode(List *pList, int id){
+static ACTOR *CreateActor(char *szFirstName, char *szLastName){
 
-    if(pList == NULL){
+    if(szFirstName == NULL || szLastName == NULL){
         return NULL;
     }
 
-    Node *pCurrent = pList->pHead;
+    ACTOR *pThis = (ACTOR*) malloc(sizeof(ACTOR));
 
-    while (pCurrent != NULL){
-        if(pCurrent->id == id){
-            return pCurrent;
-        }
-
-        pCurrent = pCurrent->pNext;
+    if(pThis == NULL){
+        return NULL;
     }
 
-    return NULL;
+    pThis->pszFirstName = malloc(strlen(szFirstName) + 1);
+    if(pThis->pszFirstName == NULL) {
+        free(pThis);
+        return NULL;
+    }
+
+    pThis->pszLastName = malloc(strlen(szLastName) + 1);
+    if(pThis->pszLastName == NULL) {
+        free(pThis->pszFirstName);
+        free(pThis);
+        return NULL;
+    }
+
+    strncpy(pThis->pszFirstName, szFirstName, strlen(szFirstName) + 1);
+    strncpy(pThis->pszLastName, szLastName, strlen(szLastName) + 1);
+
+    return pThis;
 }
 
-int swapNodes(List *pList, Node *nodeOne, Node *nodeTwo){
 
-    if(pList == NULL || nodeOne == NULL || nodeTwo == NULL || nodeOne == nodeTwo){
-        return FAIL;
+int AddActors(ACTORS_LIST *pList, char *szFirstName, char *szLastName){
+
+
+    if(szLastName == NULL || szFirstName == NULL){
+        return ERROR;
     }
 
 
-    if(nodeOne->pNext == nodeTwo){ // nodeOne is immediately before nodeTwo
-        nodeOne->pNext = nodeTwo->pNext;
-        nodeTwo->pPrevious = nodeOne->pPrevious;
+    ACTOR *pThis = CreateActor(szFirstName, szLastName);
 
-        if(nodeOne->pPrevious != NULL){
-            nodeOne->pPrevious->pNext = nodeTwo;
-        }
-        if(nodeTwo->pNext != NULL){
-            nodeTwo->pNext->pPrevious = nodeOne;
-        }
-
-        nodeTwo->pNext = nodeOne;
-        nodeOne->pPrevious = nodeTwo;
-    } else if(nodeTwo->pNext == nodeOne){ // nodeTwo is immediately before nodeOne
-        nodeTwo->pNext = nodeOne->pNext;
-        nodeOne->pPrevious = nodeTwo->pPrevious;
-
-        if(nodeTwo->pPrevious != NULL){
-            nodeTwo->pPrevious->pNext = nodeOne;
-        }
-        if(nodeOne->pNext != NULL){
-            nodeOne->pNext->pPrevious = nodeTwo;
-        }
-
-        nodeOne->pNext = nodeTwo;
-        nodeTwo->pPrevious = nodeOne;
-    } else { // Nodes are not next to each other
-        Node *temp = nodeOne->pNext;
-        nodeOne->pNext = nodeTwo->pNext;
-        nodeTwo->pNext = temp;
-
-        temp = nodeOne->pPrevious;
-        nodeOne->pPrevious = nodeTwo->pPrevious;
-        nodeTwo->pPrevious = temp;
-
-        if(nodeOne->pNext != NULL){
-            nodeOne->pNext->pPrevious = nodeOne;
-        }
-        if(nodeTwo->pNext != NULL){
-            nodeTwo->pNext->pPrevious = nodeTwo;
-        }
-        if(nodeOne->pPrevious != NULL){
-            nodeOne->pPrevious->pNext = nodeOne;
-        }
-        if(nodeTwo->pPrevious != NULL){
-            nodeTwo->pPrevious->pNext = nodeTwo;
-        }
+    if(pThis == NULL){
+        return ERROR;
     }
 
-    // Update the head and tail if needed
-    if(pList->pHead == nodeOne){
-        pList->pHead = nodeTwo;
-    } else if(pList->pHead == nodeTwo){
-        pList->pHead = nodeOne;
-    }
 
-    if(pList->pTail == nodeOne){
-        pList->pTail = nodeTwo;
-    } else if(pList->pTail == nodeTwo){
-        pList->pTail = nodeOne;
+    if(pList->pHead == NULL){
+        pList->pHead = pThis;
+        pList->pHead->pNext = NULL;
+    } else {
+        ACTOR *pCurrent = pList->pHead;
+
+        while(pCurrent->pNext != NULL){
+            pCurrent = pCurrent->pNext;
+        }
+
+        pCurrent->pNext = pThis;
+        pThis->pNext = NULL;
     }
 
     return SUCCESS;
 }
 
-void printList(List *pList){
+void ViewAllMovies(MOVIE_LIST *pList){
 
-    if(pList == NULL){
-        printf("List pointer is NULL.\n");
+    if(pList == NULL || pList->pHead == NULL){
+        printf("No movies to show\r\n");
         return;
     }
 
-    if(pList->pHead == NULL){
-        printf("List is empty.\n");
-        return;
-    }
+    MOVIE *pCurrent = pList->pHead;
+    int iCounter = 1;
 
-    Node *pCurrent = pList->pHead;
-    while(pCurrent != NULL){
-        printf("%s\n", pCurrent->cBuff);
+    while (pCurrent != NULL){
+
+        printf("Movie, %d:\r\n", iCounter);
+        printf("Title: %s\r\n", pCurrent->szMovieTitle);
+        printf("Release Year: %d\r\n", pCurrent->iReleaseYear);
+        if(pCurrent->pActors != NULL){
+            ACTOR *pCurrentActor = pCurrent->pActors->pHead;
+            int iCounterActor = 1;
+            while (pCurrentActor != NULL){
+                printf("Actor %d : %s, %s\r\n",iCounterActor,pCurrentActor->pszFirstName,pCurrentActor->pszLastName);
+                pCurrentActor = pCurrentActor->pNext;
+                iCounterActor++;
+            }
+        } else{
+            printf("No actors listed for this movie.\r\n");
+        }
         pCurrent = pCurrent->pNext;
+        iCounter++;
+        printf("\r\n");
     }
-    printf("-----------------------------------\n");
+
 }
+
+
