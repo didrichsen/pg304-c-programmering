@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "./common.h"
+
 // Define constants for buffer size
 #define BUFFER_SIZE 1024
 

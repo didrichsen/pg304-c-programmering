@@ -6,7 +6,7 @@ CFLAGS += -I$(INCLDIR)
 
 OBJDIR = ./obj
 
-_DEPS = actor.h input.h menu.h movie.h utils.h
+_DEPS = actor.h input.h menu.h movie.h utils.h common.h
 DEPS = $(patsubst %,$(INCLDIR)/%,$(_DEPS))
 
 _OBJS = utils.o movie.o movieapplication.o menu.o input.o actor.o

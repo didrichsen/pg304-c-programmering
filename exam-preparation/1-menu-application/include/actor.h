@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Define constants for success and error
-#define SUCCESS 0
-#define ERROR (-1)
+#include "./common.h"
+
+
 
 // Define the ACTOR structure
 typedef struct ACTOR {

@@ -69,6 +69,15 @@ int InsertMovie(MOVIE_LIST *pList, char *pszTitle, int iReleaseYear){
 
 }
 
+int ValidReleaseYear(int ReleaseYear, int rangeStart,int rangeEnd){
+
+    if(ReleaseYear < rangeStart || ReleaseYear >= rangeEnd){
+        return 1;
+    }
+
+    return 0;
+}
+
 //Delete movie based on title.
 int DeleteMovieBasedOnTitle(MOVIE_LIST *pList, char *pszMovieTitle){
 

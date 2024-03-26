@@ -53,22 +53,26 @@ int main(int argc, char* argv[]) {
                     //Getting the release year
                     do {
 
+                        memset(pszBuffer, 0, BUFFER_SIZE);
+
                         printf("Enter release year \r\n");
 
                         GetZeroTerminatedUserInput(pszBuffer, BUFFER_SIZE);
                         iReleaseYear = atoi(pszBuffer);
 
                         //Atoi returns zero if input are invalid
-                        if (iReleaseYear == 0) {
+                        if (ValidReleaseYear(iReleaseYear,1888,2025)) {
                             printf("\x1b[31m"); //Prints red text
                             printf("Invalid input. Try again..\r\n");
                             printf("\x1b[0m");
-                            usleep(1000000);
                         }
 
-                    } while (iReleaseYear == 0);
+                    } while (ValidReleaseYear(iReleaseYear,1888,2025));
 
                     //We summarize movie details and give the user the option to redo if needed.
+                    printf("*************************\r\n");
+                    printf("*       Movie Summary   *\r\n");
+                    printf("*************************\r\n");
                     printf("Movie: %s\r\nRelease year: %d\r\n", szMovieTitle, iReleaseYear);
                     printf("Continue or Edit movie (y or n)?\r\n");
 
@@ -157,8 +161,10 @@ int main(int argc, char* argv[]) {
                     break;
                 } else{
                     printf("\x1b[32m");
-                    printf("Successfully added actor, %s %s,to movie with title, %s\r\n",pszFirstName,pszLastName, szMovieTitle);
+                    printf("Successfully");
                     printf("\x1b[0m");
+                    printf(" added actor, \x1b[35m%s %s\x1b[0m, to movie with title, \x1b[35m%s\x1b[0m.", pszFirstName, pszLastName, szMovieTitle);
+                    printf("\r\n");
                 }
 
                 ToMainMenu();

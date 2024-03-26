@@ -27,5 +27,6 @@ int InsertMovie(MOVIE_LIST *pList, char *pszTitle, int iReleaseYear);
 int DeleteMovieBasedOnTitle(MOVIE_LIST *pList, char *pszMovieTitle);
 MOVIE *FindMovie(MOVIE_LIST *pList, char *pszMovieTitle);
 int DeleteMovies(MOVIE_LIST *pList);
+int ValidReleaseYear(int ReleaseYear, int rangeStart,int rangeEnd);
 
 #endif // MOVIE_H

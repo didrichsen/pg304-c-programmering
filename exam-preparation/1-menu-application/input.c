@@ -1,7 +1,8 @@
 #include "include/input.h"
 
 //Removes spaces, newline char and forces zero terminator to be the last char.
-static void SanitizeInput (char *psText){
+//Returns length of string minus zero terminator
+static int SanitizeInput (char *psText){
 
     char *d;
     char *end;
@@ -43,34 +44,55 @@ static void SanitizeInput (char *psText){
     //I add +1 to account for \0
     memmove(psText,d,length + 1);
 
+    return length;
+
 }
 
 //Returns a zero terminated string not longer than iSize.
-void GetZeroTerminatedUserInput(char *pszBufferDestination, int iSize){
-
+void GetZeroTerminatedUserInput(char *pszBufferDestination, int iSize) {
     char szLocalBuffer[BUFFER_SIZE] = {0};
-    int iInputValid;
+    int iInputValid = FALSE;
 
     do {
+        // Write to buffer
+        fgets(szLocalBuffer, BUFFER_SIZE, stdin);
 
-        iInputValid = TRUE;
-
-        fgets(szLocalBuffer,BUFFER_SIZE-1, stdin);
-
-        //If strstr returns NULL it means input was too long since it wasent room for "\n"
-        if((strstr(szLocalBuffer,"\n")) == NULL || strlen(szLocalBuffer) > iSize) {
-
-            printf("Input to long.\r\n");
-            //Empty buffer. We empty all the way until \n since there are still chars in the buffer.
-            while (getchar() != '\n');
-
+        // Check if only 'Enter' was pressed
+        if (szLocalBuffer[0] == '\n') {
+            printf("\x1b[31m"); // Prints red text
+            printf("Only 'Enter' pressed.\r\n");
+            printf("\x1b[0m");
+        } else if (strchr(szLocalBuffer, '\n') == NULL) {
+            // Check if the newline is present in the buffer
+            // Flush the buffer if the newline is not present
+            printf("\x1b[31m"); // Prints red text
+            printf("Input too long for buffer.\r\n");
+            printf("\x1b[0m");
+            while (getchar() != '\n' && !feof(stdin));
             iInputValid = FALSE;
-        }
+        }else {
+            // Sanitize the input
+            int length = SanitizeInput(szLocalBuffer);
 
+            // Checks if the length is zero after sanitize. If so, only spaces were entered.
+            if (length == 0) {
+                printf("\x1b[31m"); // Prints red text
+                printf("Only 'space' was registered.\r\n");
+                printf("\x1b[0m");
+            }
+                // Check if input is too long after sanitization
+            else if (length >= iSize) {
+                printf("\x1b[31m"); // Prints red text
+                printf("Input too long.\r\n");
+                printf("\x1b[0m");
+            } else {
+                iInputValid = TRUE;
+            }
+
+        }
     } while (!iInputValid);
 
-    SanitizeInput(szLocalBuffer);
-
-    strncpy(pszBufferDestination,szLocalBuffer,iSize);
-
+    // Copy the sanitized input to the destination buffer
+    strncpy(pszBufferDestination, szLocalBuffer, iSize - 1);
+    pszBufferDestination[iSize - 1] = '\0'; // Ensure null termination
 }
